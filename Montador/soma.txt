@@ -1,0 +1,68 @@
+#
+# programa exemplo:
+#
+# valor de a: lido, digitado pelo usuario
+# valor de b: dado, constante no codigo
+# calcula soma = a + b
+# imprime soma
+#
+# A descricao de todas as instrucoes do MIPS encontra-se em:
+# http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html
+#
+
+      .data          
+a:    .word  0   
+bu:   .asciiz "bu"  # apenas para exemplificar o alinhamento
+b:    .word   0Xf
+soma: .word   0
+# atencao: variaveis strings nao sao aninhadas na memoria
+# elas sao alocadas sequencialmente sem essa preocupacao
+entrada: .asciiz "entra a: "  
+valorb:  .asciiz "valor b: "
+saida:   .asciiz "\nsoma: "
+
+      .text
+main: # imprime o prompt
+    li   $v0, 4         # print_string
+    la   $a0, entrada   # endereco do string
+    syscall             # chamada ao sistema
+      
+leia: # le o valor inteiro de a
+    li   $v0, 5         # read_integer
+    syscall             # chamada ao sistema
+    la   $t0, a         # endereco de a
+    sw   $v0, 0($t0)    # a = inteiro lido
+
+mostra: # imprime valor de b    
+    li   $v0, 4         # print_string
+    la   $a0, valorb    # endereco do string
+    syscall             # chamada ao sistema
+    la   $t0, b         # endereco de b
+    lw   $a0, 0($t0)    # valor de b
+    li   $v0, 1         # print_integer
+    syscall
+    
+calcula: # calcula soma de a e b    
+    la   $t1, a         # endereco de a
+    la   $t2, b         # endereco de b
+    lw   $t4, 0($t1)    # valor de a
+    lw   $t5, 0($t2)    # valor de b
+    add  $t6, $t4, $t5  # calcula soma
+    
+salva: # armazena valor da soma
+    la   $t1, soma      # endereco de soma
+    sw   $t6, 0($t1)    # armazena soma
+    
+imprima: # imprime resultado    
+    li   $v0, 4         # print_string
+    la   $a0, saida     # endereco do string
+    syscall             # chamada ao sistema
+    li   $v0, 1         # print_integer
+    move $a0, $t6       # inteiro a imprimir 
+    syscall
+    
+termina: # termmina a execucao
+    li   $v0, 10         
+    syscall        
+      
+      
